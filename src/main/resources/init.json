@@ -1,0 +1,22 @@
+[
+  {
+    "httpRequest": {
+      "path": "/api/people/.*"
+    },
+    "httpForward": {
+      "host": "swapi.dev",
+      "port": 443,
+      "scheme": "HTTPS"
+    }
+  },
+  {
+    "httpRequest": {
+      "path": "/api/breeds/image/.*"
+    },
+    "httpForward": {
+      "host": "dog.ceo",
+      "port": 443,
+      "scheme": "HTTPS"
+    }
+  }
+]
