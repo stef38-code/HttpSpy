@@ -1,20 +1,17 @@
 package org.application.http.spy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.mockserver.client.MockServerClient;
+import org.mockserver.configuration.Configuration;
+import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.integration.ClientAndServer;
-import org.mockserver.mock.Expectation;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpForward;
-import org.mockserver.model.HttpResponse;
+import org.mockserver.mock.action.ExpectationResponseCallback;
+import org.mockserver.model.Delay;
+import org.mockserver.model.Format;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -26,36 +23,20 @@ public class Main {
         clientAndServerLoad();
 
     }
-    private static void clientAndServerLoad() throws IOException {
+
+    private static void clientAndServerLoad() {
         log.info("start clientAndServer");
-        ClientAndServer clientAndServer = new ClientAndServer(8081);
-
-        // Charger le fichier init.json
-        ObjectMapper objectMapper = new ObjectMapper();
-        URL resource = Main.class.getClassLoader().getResource("init.json");
-        assert resource != null;
-        Expectation[] expectations = objectMapper.readValue(new File(resource.getFile()), Expectation[].class);
-
-        // Envoyer les attentes à MockServer
-        clientAndServer.upsert(expectations);
+        ConfigurationProperties.watchInitializationJson(true);
+        ConfigurationProperties.initializationJsonPath("init.json");
+        ExpectationResponseCallback sample = new MyExpectationResponseCallback();
+        ClientAndServer.startClientAndServer(Configuration.configuration(), 8081);
+//                .when(request().withPath(".*"))
+//                .respond(sample, Delay.delay(TimeUnit.MILLISECONDS,0L));
+//                .retrieveRecordedRequestsAndResponses(
+//                request().withPath(".*"),
+//                Format.JAVA
+//        );
+        log.info("=================================");
 
     }
-
-    private static void clientAndServer() {
-        log.info("start clientAndServer");
-        HttpForward httpForward = HttpForward.forward().withScheme(HttpForward.Scheme.HTTPS).withHost("dog.ceo").withPort(443);
-        ClientAndServer clientAndServer = new ClientAndServer(8081);
-
-        log.info("when");
-        clientAndServer
-                .when(
-                        request().withPath("/api/breeds/image/.*")
-                                .withMethod("GET")
-                )
-                .forward(
-                        httpForward
-                );
-
-    }
-
 }

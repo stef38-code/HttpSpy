@@ -1,6 +1,5 @@
 [
   {
-    "id": "1",
     "httpRequest": {
       "path": "/api/people/.*"
     },
@@ -11,7 +10,6 @@
     }
   },
   {
-    "id": "2",
     "httpRequest": {
       "path": "/api/breeds/image/.*"
     },
@@ -22,18 +20,16 @@
     }
   },
   {
-    "id": "3",
     "httpRequest": {
       "path": "/search/.*"
     },
+    "httpResponseClassCallback": {
+    "callbackClass": "org.application.http.spy.MyExpectationResponseCallback"
+  },
   "httpForward": {
       "host": "api-adresse.data.gouv.fr",
       "port": 443,
       "scheme": "HTTPS"
-    },
-    "httpResponseClassCallback": {
-      "callbackClass": "org.application.http.spy.MyExpectationResponseCallback"
     }
-
   }
 ]
